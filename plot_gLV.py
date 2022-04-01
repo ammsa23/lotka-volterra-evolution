@@ -13,10 +13,11 @@ Model with evolution simulation studies.
 import numpy as np 
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+import matplotlib.lines as lines
 
 # set the font parameters 
 font = {
-    "family": "monospace"
+    "family": "serif"
     }
 plt.rc("font", **font)
 
@@ -26,7 +27,8 @@ def plot_interaction_matrix(
     ): 
     '''
     Plot the interaction matrix for all species and the mutant
-    species of interest, labeling the matrix as such 
+    species of interest, labeling the matrix as such
+    The mutant is labeled with an asterisk (*)
 
     Parameters: 
     -----------
@@ -74,7 +76,8 @@ def plot_interaction_matrix(
     # add a colorbar 
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.3)
-    plt.colorbar(mat, cax=cax)
+    cbar = plt.colorbar(mat, cax=cax)
+    cbar.ax.tick_params(labelsize=14)
 
     # show the figure 
     plt.show()
@@ -128,16 +131,116 @@ def plot_birth_death_rates(
     # show the figure
     plt.show()
 
-def plot_mutant_trajectories(): 
+def plot_mutant_trajectories(
+        mutant_states: np.array, 
+        simulation_lengths: np.array
+    ): 
+    '''
+    Plot the mutant population over time for all simulations 
+
+    Parameters: 
+    -----------
+    np.array mutant_states - array of mixed length describing the 
+    population sizes of the mutant species of interest over time 
+    np.array simulation_lengths - array of lengths for each simulation 
+
+    Returns: 
+    --------
+    None
     '''
 
+    # initialize figure and axis objects for the plot 
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
+
+    # plot the mutant trajectories over time, using maximum time for x-axis
+    max_time = np.max(simulation_lengths)
+    for sim in mutant_states: 
+
+        # adjust sim so that it matches the length of max_time 
+        sim = sim + (max_time - len(sim)) * [sim[-1]]
+
+        # color the trajectories based on fixation or extinction 
+        if sim[-1] == 0: 
+            ax.plot(np.arange(1, max_time + 1), sim, "r-", alpha=0.15)
+        else: 
+            ax.plot(np.arange(1, max_time + 1), sim, "b-", alpha=0.15)
+
+    # labeling the plot 
+    ax.set_title("Mutant Population Trajectories", fontsize=20)
+    ax.set_xlabel("Transitions", fontsize=20)
+    ax.set_ylabel("Mutant Population", fontsize=20)
+    ax.set_xticks(ax.get_xticks())
+    ax.set_yticks(ax.get_yticks())
+    ax.set_xticklabels(ax.get_xticks().astype("int32"), fontsize=20)
+    ax.set_yticklabels(ax.get_yticks().astype("int32"), fontsize=20)
+
+    # make custom figure handles 
+    extinct = lines.Line2D([], [], color="r", label = "Extinction")
+    fixed = lines.Line2D([], [], color="b", label = "Fixation")
+
+    # make a legend 
+    ax.legend(
+        handles = [extinct, fixed], 
+        loc = "upper left", 
+        fontsize=16
+    )
+
+    # show the figure
+    plt.show()
+
+def plot_wt_trajectories(
+        wt_states: np.array, 
+        simulation_lengths: np.array
+    ): 
+    '''
+    Plot the wt population over time for all simulations 
+
+    Parameters: 
+    -----------
+    np.array wt_states - array of mixed length describing the 
+    population sizes of the wt species of interest over time 
+    np.array simulation_lengths - array of lengths for each simulation 
+
+    Returns: 
+    --------
+    None
     '''
 
-    pass
+    # initialize figure and axis objects for the plot 
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
 
-def plot_trajectory(): 
-    '''
-    
-    '''
+    # plot the wt trajectories over time, using maximum time for x-axis
+    max_time = np.max(simulation_lengths)
+    for sim in wt_states: 
 
-    pass
+        # adjust sim so that it matches the length of max_time 
+        sim = sim + (max_time - len(sim)) * [sim[-1]]
+
+        # color the trajectories based on fixation or extinction 
+        if sim[-1] == 0: 
+            ax.plot(np.arange(1, max_time + 1), sim, "r-", alpha=0.15)
+        else: 
+            ax.plot(np.arange(1, max_time + 1), sim, "b-", alpha=0.15)
+
+    # labeling the plot 
+    ax.set_title("Wild-type Population Trajectories", fontsize=20)
+    ax.set_xlabel("Transitions", fontsize=20)
+    ax.set_ylabel("Wild-Type Population", fontsize=20)
+    ax.set_xticks(ax.get_xticks())
+    ax.set_yticks(ax.get_yticks())
+    ax.set_xticklabels(ax.get_xticks().astype("int32"), fontsize=20)
+    ax.set_yticklabels(ax.get_yticks().astype("int32"), fontsize=20)
+
+    # make custom figure handles 
+    extinct = lines.Line2D([], [], color="r", label = "Extinction")
+    fixed = lines.Line2D([], [], color="b", label = "Fixation")
+
+    # make a legend 
+    ax.legend(
+        handles = [extinct, fixed], 
+        loc = "upper left", 
+        fontsize=16
+    )
+
+    # show the figure
+    plt.show()

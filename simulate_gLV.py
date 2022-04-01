@@ -287,7 +287,7 @@ def run_simulation(
     system_state = np.hstack([np.repeat(pop_size, S-1), [pop_size - 1, 1]])
 
     # create arrays to store the waiting times and states of the system
-    system_states = list()
+    system_states = [list(system_state)]
     exp_wait_times = list()
 
     # set counter to count total number of steps/transitions made 
@@ -320,5 +320,5 @@ def run_simulation(
         result = 0 
 
     # return the result of the simulation and the collected data
-    #  for the entire simulation 
+    # for the entire simulation 
     return result, np.array(system_states), np.array(exp_wait_times)
