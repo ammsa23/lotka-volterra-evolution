@@ -56,7 +56,8 @@ def mutant_birth_death_rate(birth_death: np.array):
 
     return birth_death + random.uniform(low = -0.1, high = 0.1, size = (1,2))
 
-def pre_interaction_matrix(S: int, method = "May"): 
+def pre_interaction_matrix(S: int, method = "May", rho = None, 
+                                                   tol = None): 
     '''
     Generate an interaction matrix for the relationships between species 
     using either the method described by May or Alessina-Tang
@@ -65,7 +66,8 @@ def pre_interaction_matrix(S: int, method = "May"):
     -----------
     int S - total number of species; will generate a total of S(S-1) interaction
     parameters 
-    string method - the method to generate the interaction matrix 
+    string method - the method to generate the interaction matrix: the two
+    options are either (1) "May" or (2) "Alessina-Tang"
 
     Returns: 
     --------
@@ -73,8 +75,27 @@ def pre_interaction_matrix(S: int, method = "May"):
     species (shape: (S, S), diagonal elements are set to 0)
     '''
 
-    # generate the interaction matrix with all entries filled 
-    interaction_matrix = random.normal(loc = 0, scale = 1, size = (S, S))
+    interaction_matrix = None
+
+    # using the May method
+    if (method == "May"): 
+
+        # generate the interaction matrix with all entries filled 
+        interaction_matrix = random.normal(loc = 0, scale = 1, size = (S, S))
+
+    elif (method == "Alessina-Tang"): 
+
+        # generate paired data from a bivariate normal distribution 
+        pairs = random.multivariate_normal(np.array([0, 0]), 
+                                           np.array([1, rho, rho, 1]).reshape(2, 2))
+
+        # place the paired data into the matrix 
+        interaction_matrix = np.zeros((S, S))
+        interaction_matrix[np.triu_indices(S)] = pairs[:,0]
+        interaction_matrix[np.tril_indices(S)] = pairs[:,1]
+
+        
+        
 
     # set the diagonal elements to 0
     return np.fill_diagonal(interaction_matrix, 0)
@@ -122,13 +143,16 @@ def generate_interaction_matrix(S: int, method = "May"):
     -----------
     int S - total number of species; will generate a total of S(S+1) interaction
     parameters
-    string method - the method to generate the interaction matrix 
+    string method - the method to generate the interaction matrix: the two
+    options are either (1) "May" or (2) "Alessina-Tang"
 
     Returns: 
     --------
     np.array - interaction matrix describing the relationship between the S
     species (shape: (S+1, S+1), diagonal elements are set to 0)
     '''
+
+    interaction_matrix = None
 
     # generate the interaction matrix without the mutant
     pre_interaction_matrix = pre_interaction_matrix(S, method = method)
@@ -140,7 +164,7 @@ def generate_interaction_matrix(S: int, method = "May"):
 
     # stack the perturbed interactions onto the interaction matrix
     interaction_matrix = np.vstack([np.hstack([pre_interaction_matrix, 
-                                               interaction_col]), 
+                                            interaction_col]), 
                                     interaction_row])
 
     return interaction_matrix

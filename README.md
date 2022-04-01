@@ -7,10 +7,9 @@ Slightly perturb the interaction row of the mutation and then simulate from here
 Simulate this using a stochastic framework such that there are N initial species of each type and then use birth-death or some other model for how evolution will occur
 
 # Questions
-How do we choose an interaction matrix (consider a Normal [2 params] or Uniform [2 params; -1 and 1])
+How do we choose an interaction matrix (consider a Normal [2 params] or Uniform [2 params; -0.1 and 0.1])
 How do we perturb the interaction row once the mutation has occurred. 
 
 # Computational 
-Simulate ODEs 
 Generate interaction matrix 
 Perturbation 
