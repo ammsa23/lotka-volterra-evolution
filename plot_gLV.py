@@ -22,7 +22,7 @@ plt.rc("font", **font)
 
 def plot_interaction_matrix(
         interaction_matrix: np.array, 
-        cmap = "cividis"
+        cmap = "bwr"
     ): 
     '''
     Plot the interaction matrix for all species and the mutant
@@ -34,7 +34,7 @@ def plot_interaction_matrix(
     the relationships between all species and the mutant species of
     interest 
     str cmap - matplotlib cmap to be used for plotting; default is
-    cividis
+    bwr
 
 
     Returns: 
@@ -48,7 +48,9 @@ def plot_interaction_matrix(
     # plot the interaction matrix 
     mat = ax.matshow(
         interaction_matrix, 
-        cmap = cmap
+        cmap = cmap, 
+        vmin = -1.25, 
+        vmax = 1.25
     )
 
     # create the tick labels 
@@ -113,11 +115,13 @@ def plot_birth_death_rates(
     ax.set_xlabel("Species", fontsize=20)
     ax.set_ylabel("Birth/Death Rate", fontsize=20)
     ax.set_xticks(np.arange(birth_rates.shape[0]))
+    rate_max = np.max(np.hstack([birth_rates, death_rates]))
+    ax.set_yticks(np.arange(0, (rate_max // 0.2 + 1) * 0.2 + 0.1, 0.2))
     ax.set_xticklabels(tick_labels, fontsize=20)
     ax.set_yticklabels(np.round(ax.get_yticks(), 2), fontsize=20)
 
     # make a legend
-    ax.legend()
+    ax.legend(fontsize=16)
 
     # show the figure
     plt.show()
