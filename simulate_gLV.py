@@ -85,6 +85,8 @@ def calculate_adjusted_birth_rates(
 
     Parameters:
     -----------
+    np.array system_state - current populations of all species and 
+    mutant species of interest in the system 
     np.array birth_rates - birth rates of each of the species 
     np.array interaction_matrix - interaction matrix describing the 
     the relationships between all species and the mutant species of
@@ -111,6 +113,8 @@ def calculate_adjusted_death_rates(
 
     Parameters:
     -----------
+    np.array system_state - current populations of all species and 
+    mutant species of interest in the system 
     np.array death_rates - death rates of each of the species 
     np.array interaction_matrix - interaction matrix describing the 
     the relationships between all species and the mutant species of

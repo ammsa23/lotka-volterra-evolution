@@ -136,7 +136,7 @@ def plot_birth_death_rates(
 
 def plot_mutant_trajectories(
         mutant_states: np.array, 
-        simulation_lengths: np.array
+        simulated_lengths: np.array
     ): 
     '''
     Plot the mutant population over time for all simulations 
@@ -145,7 +145,7 @@ def plot_mutant_trajectories(
     -----------
     np.array mutant_states - array of mixed length describing the 
     population sizes of the mutant species of interest over time 
-    np.array simulation_lengths - array of lengths for each simulation 
+    np.array simulated_lengths - array of lengths for each simulation 
 
     Returns: 
     --------
@@ -156,7 +156,7 @@ def plot_mutant_trajectories(
     fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
 
     # plot the mutant trajectories over time, using maximum time for x-axis
-    max_time = np.max(simulation_lengths)
+    max_time = np.max(simulated_lengths)
     for sim in mutant_states: 
 
         # adjust sim so that it matches the length of max_time 
@@ -193,7 +193,7 @@ def plot_mutant_trajectories(
 
 def plot_wt_trajectories(
         wt_states: np.array, 
-        simulation_lengths: np.array
+        simulated_lengths: np.array
     ): 
     '''
     Plot the wt population over time for all simulations 
@@ -202,7 +202,7 @@ def plot_wt_trajectories(
     -----------
     np.array wt_states - array of mixed length describing the 
     population sizes of the wt species of interest over time 
-    np.array simulation_lengths - array of lengths for each simulation 
+    np.array simulated_lengths - array of lengths for each simulation 
 
     Returns: 
     --------
@@ -213,7 +213,7 @@ def plot_wt_trajectories(
     fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
 
     # plot the wt trajectories over time, using maximum time for x-axis
-    max_time = np.max(simulation_lengths)
+    max_time = np.max(simulated_lengths)
     for sim in wt_states: 
 
         # adjust sim so that it matches the length of max_time 
@@ -252,7 +252,7 @@ def plot_wt_trajectories(
 ############### COMMAND LINE PLOTTING ###############
 #####################################################
 
-def plot_interaction_matrix(
+def plot_interaction_matrix_CLI(
         interaction_matrix: np.array, 
         plot_name: str,
         cmap = "bwr"
@@ -315,7 +315,7 @@ def plot_interaction_matrix(
     fig.savefig(plot_name, dpi = 200)
     fig.show()
 
-def plot_birth_death_rates(
+def plot_birth_death_rates_CLI(
         birth_rates: np.array, 
         death_rates: np.array, 
         plot_name: str
@@ -328,7 +328,7 @@ def plot_birth_death_rates(
     -----------
     np.array birth_rates - birth rates of each of the species
     np.array death_rates - death rates of each of the species 
-    str plot_name - filename for saving plot 
+    string plot_name - filename for saving plot 
 
     Returns: 
     --------
@@ -367,9 +367,9 @@ def plot_birth_death_rates(
     fig.savefig(plot_name, dpi = 200)
     fig.show()
 
-def plot_mutant_trajectories(
+def plot_mutant_trajectories_CLI(
         mutant_states: np.array, 
-        simulation_lengths: np.array, 
+        simulated_lengths: np.array, 
         plot_name: str
     ): 
     '''
@@ -379,7 +379,7 @@ def plot_mutant_trajectories(
     -----------
     np.array mutant_states - array of mixed length describing the 
     population sizes of the mutant species of interest over time 
-    np.array simulation_lengths - array of lengths for each simulation 
+    np.array simulated_lengths - array of lengths for each simulation 
     str plot_name - filename for saving plot 
 
     Returns: 
@@ -391,7 +391,7 @@ def plot_mutant_trajectories(
     fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
 
     # plot the mutant trajectories over time, using maximum time for x-axis
-    max_time = np.max(simulation_lengths)
+    max_time = np.max(simulated_lengths)
     for sim in mutant_states: 
 
         # adjust sim so that it matches the length of max_time 
@@ -427,9 +427,9 @@ def plot_mutant_trajectories(
     fig.savefig(plot_name, dpi = 200)
     fig.show()
 
-def plot_wt_trajectories(
+def plot_wt_trajectories_CLI(
         wt_states: np.array, 
-        simulation_lengths: np.array, 
+        simulated_lengths: np.array, 
         plot_name: str
     ): 
     '''
@@ -439,7 +439,7 @@ def plot_wt_trajectories(
     -----------
     np.array wt_states - array of mixed length describing the 
     population sizes of the wt species of interest over time 
-    np.array simulation_lengths - array of lengths for each simulation 
+    np.array simulated_lengths - array of lengths for each simulation 
     str plot_name - filename for saving plot 
 
     Returns: 
@@ -451,7 +451,7 @@ def plot_wt_trajectories(
     fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
 
     # plot the wt trajectories over time, using maximum time for x-axis
-    max_time = np.max(simulation_lengths)
+    max_time = np.max(simulated_lengths)
     for sim in wt_states: 
 
         # adjust sim so that it matches the length of max_time 
