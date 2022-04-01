@@ -17,7 +17,6 @@ matrix.
 
 # import necessary modules 
 import argparse, os
-from cmath import exp
 
 import numpy as np 
 import matplotlib.pyplot as plt
