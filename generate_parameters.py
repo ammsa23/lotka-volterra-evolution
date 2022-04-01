@@ -32,7 +32,7 @@ def generate_birth_death_rates(S: int):
 
     Returns: 
     --------
-    np.array - birth (column 1) and death (column 2) rates for each 
+    np.array - array of birth (column 1) and death (column 2) rates for each 
     species (shape: (S, 2))
     '''
 
@@ -50,8 +50,8 @@ def mutant_birth_death_rate(birth_death: np.array):
 
     Returns: 
     --------
-    np.array - perturbed birth and death rates for the mutant species of interest
-    (shape: (1, 2))
+    np.array - array of perturbed birth and death rates for the mutant 
+    species of interest (shape: (1, 2))
     '''
 
     return birth_death + random.uniform(low = -0.1, high = 0.1, size = (1,2))
@@ -94,8 +94,10 @@ def mutant_interaction_matrix(interaction_row: np.array, interaction_col: np.arr
 
     Returns: 
     --------
-    np.array (1) - perturbed interaction column information (shape: (n-1,))
-    np.array (2) - perturbed interaction row information (shape: (n,))
+    np.array (1) - array of perturbed interaction column information 
+    (shape: (n-1,))
+    np.array (2) - array of perturbed interaction row information 
+    (shape: (n,))
     '''
 
     # perturb the interaction column first, dropping the last term (0)
