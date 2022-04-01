@@ -5,7 +5,7 @@ __email__ = "aasaeed@college.harvard.edu"
 '''
 Description: 
 ------------
-This script contains functions that generate parameters for the generalized 
+This file contains functions that generate parameters for the generalized 
 Lotka-Volterra Model with evolution represented under a stochastic framework
 for S total species and a mutant of one of the species
 

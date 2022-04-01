@@ -5,7 +5,7 @@ __email__ = "aasaeed@college.harvard.edu"
 '''
 Description: 
 ------------
-This script contains functions for simulating the generalized 
+This file contains functions for simulating the generalized 
 Lotka-Volterra Model with evolution for a total of S species 
 under a stochastic framework, particularly a Moran process. 
 The functions expect parameters for the simulation (birth and 
