@@ -62,6 +62,7 @@ def plot_interaction_matrix(
     )
 
     # labeling the plot 
+    ax.set_title("Species Interaction Matrix", fontsize=20)
     ax.set_xlabel("Species", fontsize=20)
     ax.set_ylabel("Species", fontsize=20)
     ax.set_xticks(np.arange(interaction_matrix.shape[0]))
@@ -112,6 +113,7 @@ def plot_birth_death_rates(
     )
 
     # labeling the plot 
+    ax.set_title("Birth/Death Rate of Species", fontsize=20)
     ax.set_xlabel("Species", fontsize=20)
     ax.set_ylabel("Birth/Death Rate", fontsize=20)
     ax.set_xticks(np.arange(birth_rates.shape[0]))
