@@ -311,7 +311,7 @@ def report_simulation_statistics(
     summary_lines = f"""
 The estimated fixation probability under the gLV model is {np.round(success_counter / 10000, 4)}
 The gLV model was randomly reduced to the classical Moran process {reduction_counter} times
-The average number of transitions until absorption for the species of interst is {np.round(np.mean(simulated_lengths), 4)}
+The average number of transitions until absorption for the species of interest is {np.round(np.mean(simulated_lengths), 4)}
 The average total wait time until absorption for the species of interest is {np.round(np.mean(exp_wait_times), 4)}"""
 
     print(summary_lines)
@@ -436,8 +436,7 @@ if __name__ == "__main__":
         birth_rates = birth_death_rates[:, 0], 
         death_rates = birth_death_rates[:, 1]
     )
-    fixation_line = f"The fixation probability of the standard Moran process is \
-        {np.round(fixation_probability, 4)}"
+    fixation_line = f"The fixation probability of the standard Moran process is {np.round(fixation_probability, 4)}"
     f.write(fixation_line+"\n\n")
     print(fixation_line, end="\n")
 
