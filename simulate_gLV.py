@@ -301,7 +301,12 @@ def run_simulation(
     ): 
         
         # simulate a single step in the loop 
-        system_state, exp_wait_time = run_step(system_state, birth_rates, death_rates, interaction_matrix)
+        system_state, exp_wait_time = run_step(
+                                        system_state, 
+                                        birth_rates, 
+                                        death_rates, 
+                                        interaction_matrix
+                                        )
 
         # append the current information about the system trajectory
         system_states.append(list(system_state))

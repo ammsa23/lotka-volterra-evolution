@@ -21,11 +21,9 @@ the interval [-0.1,0.1]
 import numpy as np
 from numpy.random import default_rng
 
-# define a standard rng object for all functions 
-rng = default_rng()
-
 def generate_birth_death_rates(
-        S: int
+        S: int, 
+        seed: int
     ): 
     '''
     Generate a pair of positive birth and death rates for each species
@@ -34,6 +32,7 @@ def generate_birth_death_rates(
     -----------
     int S - total number of species; the number of birth and death rates to 
     generate
+    int seed - random seed integer 
 
     Returns: 
     --------
@@ -41,10 +40,14 @@ def generate_birth_death_rates(
     species (shape: (S, 2))
     '''
 
+    # define a rng object
+    rng = default_rng(seed)
+
     return np.abs(rng.normal(loc = 0, scale = 1, size = (S, 2)))
 
 def mutant_birth_death_rate(
-        birth_death: np.array
+        birth_death: np.array, 
+        seed: int
     ): 
     '''
     Perturb the given birth and death rates from draws of a Uniform distribution 
@@ -54,6 +57,7 @@ def mutant_birth_death_rate(
     -----------
     np.array birth_death - birth and death rates of the species of interest; 
     birth and death rates to be perturbed 
+    int seed - random seed integer
 
     Returns: 
     --------
@@ -61,10 +65,14 @@ def mutant_birth_death_rate(
     species of interest (shape: (1, 2))
     '''
 
+    # define a rng object
+    rng = default_rng(seed)
+
     return birth_death + rng.uniform(low = -0.1, high = 0.1, size = (1,2))
 
 def pre_interaction_matrix(
         S: int, 
+        seed: int, 
         method = "May", 
         rho = None, 
         tol = None
@@ -77,14 +85,22 @@ def pre_interaction_matrix(
     -----------
     int S - total number of species; will generate a total of S(S-1) interaction
     parameters 
+    int seed - random seed integer
     string method - the method to generate the interaction matrix: the two
     options are either (1) "May" or (2) "Alessina-Tang"
+    float rho - correlation coefficient between bivariate Normal random 
+    variables 
+    float tol - tolerance level for maintaining connections in the interaction
+    matrix
 
     Returns: 
     --------
     np.array - interaction matrix describing the relationship between the S
     species (shape: (S, S), diagonal elements are set to 0)
     '''
+
+    # define a rng object
+    rng = default_rng(seed)
 
     interaction_matrix = np.zeros((S, S))
 
@@ -125,7 +141,8 @@ def pre_interaction_matrix(
 
 def mutant_interaction_matrix(
         interaction_row: np.array, 
-        interaction_col: np.array
+        interaction_col: np.array, 
+        seed: int
     ): 
     '''
     Perturb the given interaction matrix row and column from draws 
@@ -138,6 +155,7 @@ def mutant_interaction_matrix(
     np.array interaction_col - column of the interaction matrix for
     the species of interest; column of the interaction matrix to be 
     perturbed
+    int seed - random seed integer
 
     Returns: 
     --------
@@ -146,6 +164,9 @@ def mutant_interaction_matrix(
     np.array (2) - array of perturbed interaction row information 
     (shape: (n,))
     '''
+
+    # define a rng object
+    rng = default_rng(seed)
 
     # perturb the interaction column first, dropping the last term (0)
     interaction_col = interaction_col + \
@@ -162,6 +183,7 @@ def mutant_interaction_matrix(
 
 def generate_interaction_matrix(
         S: int, 
+        seed: int, 
         method = "May"
     ): 
     '''
@@ -173,6 +195,7 @@ def generate_interaction_matrix(
     -----------
     int S - total number of species; will generate a total of S(S+1) interaction
     parameters
+    int seed - random seed integer
     string method - the method to generate the interaction matrix: the two
     options are either (1) "May" or (2) "Alessina-Tang"
 
@@ -185,12 +208,17 @@ def generate_interaction_matrix(
     interaction_matrix = None
 
     # generate the interaction matrix without the mutant
-    interaction_matrix = pre_interaction_matrix(S, method = method)
+    interaction_matrix = pre_interaction_matrix(
+                            S, 
+                            method = method, 
+                            seed = seed
+                            )
 
     # perturb the species of interest (the last species)
     interaction_row, interaction_col = mutant_interaction_matrix(
                                         interaction_matrix[-1,:],
-                                        interaction_matrix[:,-1]
+                                        interaction_matrix[:,-1], 
+                                        seed = seed
                                         )
 
     # stack the perturbed interactions onto the interaction matrix
