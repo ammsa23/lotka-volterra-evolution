@@ -19,9 +19,14 @@ the interval [-0.1,0.1]
 '''
 
 import numpy as np
-import numpy.random as random
+from numpy.random import default_rng
 
-def generate_birth_death_rates(S: int): 
+# define a standard rng object for all functions 
+rng = default_rng()
+
+def generate_birth_death_rates(
+        S: int
+    ): 
     '''
     Generate a pair of positive birth and death rates for each species
     
@@ -36,9 +41,11 @@ def generate_birth_death_rates(S: int):
     species (shape: (S, 2))
     '''
 
-    return np.abs(random.normal(loc = 0, scale = 1, size = (S, 2)))
+    return np.abs(rng.normal(loc = 0, scale = 1, size = (S, 2)))
 
-def mutant_birth_death_rate(birth_death: np.array): 
+def mutant_birth_death_rate(
+        birth_death: np.array
+    ): 
     '''
     Perturb the given birth and death rates from draws of a Uniform distribution 
     on the interval [-0.1, 0.1]
@@ -54,10 +61,14 @@ def mutant_birth_death_rate(birth_death: np.array):
     species of interest (shape: (1, 2))
     '''
 
-    return birth_death + random.uniform(low = -0.1, high = 0.1, size = (1,2))
+    return birth_death + rng.uniform(low = -0.1, high = 0.1, size = (1,2))
 
-def pre_interaction_matrix(S: int, method = "May", rho = None, 
-                                                   tol = None): 
+def pre_interaction_matrix(
+        S: int, 
+        method = "May", 
+        rho = None, 
+        tol = None
+    ): 
     '''
     Generate an interaction matrix for the relationships between species 
     using either the method described by May or Alessina-Tang
@@ -81,12 +92,12 @@ def pre_interaction_matrix(S: int, method = "May", rho = None,
     if (method == "May"): 
 
         # generate the interaction matrix with all entries filled 
-        interaction_matrix = random.normal(loc = 0, scale = 1, size = (S, S))
+        interaction_matrix = rng.normal(loc = 0, scale = 1, size = (S, S))
 
     elif (method == "Alessina-Tang"): 
 
         # generate paired data from a bivariate normal distribution 
-        pairs = random.multivariate_normal(np.array([0, 0]), 
+        pairs = rng.multivariate_normal(np.array([0, 0]), 
                                            np.array([1, rho, rho, 1]).reshape(2, 2))
 
         # place the paired data into the matrix 
@@ -94,13 +105,23 @@ def pre_interaction_matrix(S: int, method = "May", rho = None,
         interaction_matrix[np.triu_indices(S)] = pairs[:,0]
         interaction_matrix[np.tril_indices(S)] = pairs[:,1]
 
-        
-        
+        # use the provided tolerance value to determine which relationships
+        # to maintain
+        paired = rng.uniform(S ** 2, size = (S, S)) <= tol 
+        paired[np.tril_indices(S)] = 0
+        np.fill_diagonal(paired, 0)
+
+        # set the interaction matrix according to the rngly 
+        # generated pairs 
+        interaction_matrix = interaction_matrix * paired
 
     # set the diagonal elements to 0
     return np.fill_diagonal(interaction_matrix, 0)
 
-def mutant_interaction_matrix(interaction_row: np.array, interaction_col: np.array): 
+def mutant_interaction_matrix(
+        interaction_row: np.array, 
+        interaction_col: np.array
+    ): 
     '''
     Perturb the given interaction matrix row and column from draws 
     of a Uniform distribution on the interval [-0.1, 0.1]
@@ -123,17 +144,20 @@ def mutant_interaction_matrix(interaction_row: np.array, interaction_col: np.arr
 
     # perturb the interaction column first, dropping the last term (0)
     interaction_col = interaction_col[:-1] + \
-                      random.uniform(low = -0.1, high = 0.1, 
+                      rng.uniform(low = -0.1, high = 0.1, 
                       size = (interaction_col.shape[0]-1))
 
     # perturb the interaction row
     interaction_row = interaction_row + \
-                      random.uniform(low = -0.1, high = 0.1, 
+                      rng.uniform(low = -0.1, high = 0.1, 
                       size = (interaction_row.shape[0]))
 
     return interaction_row, interaction_col
 
-def generate_interaction_matrix(S: int, method = "May"): 
+def generate_interaction_matrix(
+        S: int, 
+        method = "May"
+    ): 
     '''
     Generate an interaction matrix for the relationships between all
     species and the mutant of the species of interest using either 
