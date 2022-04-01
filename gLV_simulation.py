@@ -16,10 +16,11 @@ matrix.
 '''
 
 # import necessary modules 
-import argparse, os
+import argparse, os, time
 
 import numpy as np 
 import matplotlib.pyplot as plt
+from alive_progress import alive_bar
 
 from parameters_gLV import *
 from plot_gLV import *
@@ -63,7 +64,7 @@ def get_args():
     parser.add_argument("--no_plot", action="store_true",
         help="If true, plotting the result figures is *skipped!*")
     parser.add_argument("--run_name", type=str,
-        default="gLV_run", help="A descriptive prefix for\
+        default="none", help="A descriptive prefix for\
         output files")
     parser.add_argument("--out_dir", type=str, 
         help="A directory for storing the simulation results\
@@ -239,23 +240,29 @@ def simulate_gLV_model(
     wt_states = list() # states of the wt until absorption 
     mutant_states = list() # states of the mutant until absorption 
 
-    # perform nsims simulations
-    for i in range(nsims): 
-        simulation_results = run_simulation(
-            S = S, 
-            pop_size = pop_size, 
-            birth_rates = birth_rates, 
-            death_rates = death_rates, 
-            interaction_matrix = interaction_matrix
-        )
+    with alive_bar(nsims) as bar: 
 
-        # store the results 
-        success_counter += simulation_results[0]
-        reduction_counter += np.any(simulation_results[1][:,0] == 0)
-        simulated_lengths.append(simulation_results[1].shape[0])
-        exp_wait_times.append(simulation_results[2].sum())
-        wt_states.append(list(simulation_results[1][:,-2]))
-        mutant_states.append(list(simulation_results[1][:,-1]))
+        # perform nsims simulations
+        for i in range(nsims): 
+            simulation_results = run_simulation(
+                S = S, 
+                pop_size = pop_size, 
+                birth_rates = birth_rates, 
+                death_rates = death_rates, 
+                interaction_matrix = interaction_matrix
+            )
+
+            # store the results 
+            success_counter += simulation_results[0]
+            reduction_counter += np.any(simulation_results[1][:,0] == 0)
+            simulated_lengths.append(simulation_results[1].shape[0])
+            exp_wait_times.append(simulation_results[2].sum())
+            wt_states.append(list(simulation_results[1][:,-2]))
+            mutant_states.append(list(simulation_results[1][:,-1]))
+
+            # update bar
+            time.sleep(0.001)
+            bar()
 
     return(
         success_counter, 
@@ -398,7 +405,15 @@ if __name__ == "__main__":
     # parse the arguments 
     args = get_args()
 
-    # make our_dir if it does not exist 
+    # make run_name if no run_name is provided
+    if args.run_name.lower() == "none": 
+        args.run_name = f"species{args.species}_seed{args.seed}_pop_size{args.population_size}_nsims{args.nsims}_method{args.method}"
+
+    # make out_dir if no out_dir is provided
+    if args.out_dir.lower() == "none": 
+        args.out_dir = f"species{args.species}_seed{args.seed}_pop_size{args.population_size}_nsims{args.nsims}_method{args.method}"
+
+    # make our_dir directory if it does not exist 
     if not os.path.isdir(args.out_dir): 
         os.mkdir(args.out_dir)
 
@@ -426,6 +441,8 @@ if __name__ == "__main__":
     f.write(fixation_line+"\n\n")
     print(fixation_line, end="\n")
 
+
+    print("Running multi-species Moran process simulations...")
     # run the gLV model simulation 
     success_counter, \
     reduction_counter, \
