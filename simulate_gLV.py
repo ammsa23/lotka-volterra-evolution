@@ -36,6 +36,44 @@ from numpy.random import default_rng
 # define a standard rng object for all functions 
 rng = default_rng()
 
+def calculate_moran_fixation_probability(
+        S: int, 
+        pop_size: int, 
+        birth_rates: np.array, 
+        death_rates: np.array
+    ):
+    '''
+    Calculate the fixation probability of the mutant species of 
+    interest, assuming a simple Moran process with no other 
+    interacting species
+    This model of the Moran process assumes that the birth and 
+    death rates are constant
+
+    Parameters: 
+    -----------
+    int S - total number of species 
+    int pop_size - population size for each present species 
+    np.array birth_rates - birth rates of each of the species 
+    np.array death_rates - death rates of each of the species
+
+    Returns: 
+    --------
+    float - baseline fixation probability of the mutant species
+    of interest
+    '''
+
+    # calculate the fitness of the species of interest and its 
+    # mutant
+    soi = birth_rates[-2] - death_rates[-2]
+    mutant_soi = birth_rates[-1] - death_rates[-1]
+
+    # calculate the relative fitness of the mutant species of 
+    # interest compared to the wild-type species of interest
+    relative_fitness = mutant_soi / soi
+
+    # calculate the fixation probability as discussed in lecture
+    return (1 - (1 / relative_fitness)) / (1 - (1 / relative_fitness) ** (S * pop_size))
+
 def calculate_adjusted_birth_rates(
         system_state: np.array, 
         birth_rates: np.array, 
@@ -179,7 +217,7 @@ def run_step(
 
     # determine the species replicating in this step 
     unif_sample = rng.uniform(low = 0, high = 1)
-    birth_idx = np.nonzero(np.cumsum(birth_probs) > unif_sample)[0]
+    birth_idx = np.nonzero(np.cumsum(birth_probs) > unif_sample)[0][0]
 
     # renormalize the death probabilities 
     remove_birth = np.ones(system_state.shape)
@@ -189,13 +227,20 @@ def run_step(
 
     # determine the species dying in this step 
     unif_sample = rng.uniform(low = 0, high = 1)
-    death_idx = np.nonzero(np.cumsum(death_probs) > unif_sample)[0]
+    death_idx = np.nonzero(np.cumsum(death_probs) > unif_sample)[0][0]
 
     # simulate the exponential waiting time, taking the max of the minimum of
     # exponential rng variables 
+
     exp_wait_time = np.max(
-        rng.exponential(system_state[birth_idx] * adj_birth_rates[birth_idx]), 
-        rng.exponential(system_state[death_idx] * adj_death_rates[death_idx])
+        np.array(
+            [
+                rng.exponential(scale = system_state[birth_idx] * \
+                    adj_birth_rates[birth_idx]), 
+                rng.exponential(scale = system_state[death_idx] * \
+                    adj_death_rates[death_idx])
+            ]
+        )
     )
     
     # update the populations of the system 
@@ -206,6 +251,7 @@ def run_step(
 
 def run_simulation(
         S: int, 
+        pop_size: int, 
         birth_rates: np.array, 
         death_rates: np.array, 
         interaction_matrix: np.array
@@ -219,6 +265,7 @@ def run_simulation(
     Parameters:
     -----------
     int S - total number of species 
+    int pop_size - population size for each present species 
     np.array birth_rates - birth rates of each of the species 
     np.array death_rates - death rates of each of the species
     np.array interaction_matrix - interaction matrix describing the 
@@ -237,8 +284,7 @@ def run_simulation(
     '''
 
     # initialize the populations of each of the species 
-    population0 = 10
-    system_state = np.hstack([np.repeat(population0, S), 1])
+    system_state = np.hstack([np.repeat(pop_size, S-1), [pop_size - 1, 1]])
 
     # create arrays to store the waiting times and states of the system
     system_states = list()
@@ -251,15 +297,23 @@ def run_simulation(
     while (
         system_state[-2] > 0 and 
         system_state[-1] > 0 and 
-        counter < 10^5
+        counter < 10^6
     ): 
         
         # simulate a single step in the loop 
         system_state, exp_wait_time = run_step(system_state, birth_rates, death_rates, interaction_matrix)
 
         # append the current information about the system trajectory
-        system_states.append(system_state)
+        system_states.append(list(system_state))
         exp_wait_times.append(exp_wait_time)
 
-    # return the collected data for the entire simulation 
-    return np.array(system_states), np.array(exp_wait_times)
+
+    # determine the result of the simulation
+    if (system_state[-1] > 0): 
+        result = 1
+    else: 
+        result = 0 
+
+    # return the result of the simulation and the collected data
+    #  for the entire simulation 
+    return result, np.array(system_states), np.array(exp_wait_times)

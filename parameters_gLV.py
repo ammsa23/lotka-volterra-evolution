@@ -86,7 +86,7 @@ def pre_interaction_matrix(
     species (shape: (S, S), diagonal elements are set to 0)
     '''
 
-    interaction_matrix = None
+    interaction_matrix = np.zeros((S, S))
 
     # using the May method
     if (method == "May"): 
@@ -95,6 +95,9 @@ def pre_interaction_matrix(
         interaction_matrix = rng.normal(loc = 0, scale = 1, size = (S, S))
 
     elif (method == "Alessina-Tang"): 
+
+        if (rho == None or tol == None): 
+            raise ValueError
 
         # generate paired data from a bivariate normal distribution 
         pairs = rng.multivariate_normal(np.array([0, 0]), 
@@ -116,7 +119,9 @@ def pre_interaction_matrix(
         interaction_matrix = interaction_matrix * paired
 
     # set the diagonal elements to 0
-    return np.fill_diagonal(interaction_matrix, 0)
+    np.fill_diagonal(interaction_matrix, 0)
+
+    return interaction_matrix
 
 def mutant_interaction_matrix(
         interaction_row: np.array, 
@@ -143,14 +148,15 @@ def mutant_interaction_matrix(
     '''
 
     # perturb the interaction column first, dropping the last term (0)
-    interaction_col = interaction_col[:-1] + \
+    interaction_col = interaction_col + \
                       rng.uniform(low = -0.1, high = 0.1, 
-                      size = (interaction_col.shape[0]-1))
+                      size = (interaction_col.shape[0]))
 
     # perturb the interaction row
     interaction_row = interaction_row + \
                       rng.uniform(low = -0.1, high = 0.1, 
                       size = (interaction_row.shape[0]))
+    interaction_row = np.hstack([interaction_row, [0]])
 
     return interaction_row, interaction_col
 
@@ -179,16 +185,17 @@ def generate_interaction_matrix(
     interaction_matrix = None
 
     # generate the interaction matrix without the mutant
-    pre_interaction_matrix = pre_interaction_matrix(S, method = method)
+    interaction_matrix = pre_interaction_matrix(S, method = method)
 
     # perturb the species of interest (the last species)
     interaction_row, interaction_col = mutant_interaction_matrix(
-                                        pre_interaction_matrix[-1,:],
-                                        pre_interaction_matrix[:,-1])
+                                        interaction_matrix[-1,:],
+                                        interaction_matrix[:,-1]
+                                        )
 
     # stack the perturbed interactions onto the interaction matrix
-    interaction_matrix = np.vstack([np.hstack([pre_interaction_matrix, 
-                                            interaction_col]), 
-                                    interaction_row])
+    interaction_matrix = np.vstack([np.hstack([interaction_matrix, 
+                                            interaction_col[:,None]]), 
+                                    interaction_row[None,:]])
 
     return interaction_matrix
