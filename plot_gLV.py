@@ -48,7 +48,7 @@ def plot_interaction_matrix(
     '''
 
     # initialize figure and axis objects for the plot 
-    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
 
     # plot the interaction matrix 
     mat = ax.matshow(
@@ -72,7 +72,7 @@ def plot_interaction_matrix(
     ax.set_ylabel("Species", fontsize=20)
     ax.set_xticks(np.arange(interaction_matrix.shape[0]))
     ax.set_yticks(np.arange(interaction_matrix.shape[0]))
-    ax.set_xticklabels(tick_labels, fontsize=20)
+    ax.set_xticklabels(tick_labels, fontsize=20, rotation="vertical")
     ax.set_yticklabels(tick_labels, fontsize=20)
     ax.xaxis.set_ticks_position('bottom')
 
@@ -104,7 +104,7 @@ def plot_birth_death_rates(
     '''
 
     # initialize figure and axis objects for the plot 
-    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
 
     # plot the birth and death rates 
     ax.plot(np.arange(birth_rates.shape[0]), birth_rates, '^-', label = "birth rates")
@@ -125,7 +125,7 @@ def plot_birth_death_rates(
     ax.set_xticks(np.arange(birth_rates.shape[0]))
     rate_max = np.max(np.hstack([birth_rates, death_rates]))
     ax.set_yticks(np.arange(0, (rate_max // 0.2 + 1) * 0.2 + 0.1, 0.2))
-    ax.set_xticklabels(tick_labels, fontsize=20)
+    ax.set_xticklabels(tick_labels, fontsize=20, rotation="vertical")
     ax.set_yticklabels(np.round(ax.get_yticks(), 2), fontsize=20)
 
     # make a legend
@@ -153,7 +153,7 @@ def plot_mutant_trajectories(
     '''
 
     # initialize figure and axis objects for the plot 
-    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
 
     # plot the mutant trajectories over time, using maximum time for x-axis
     max_time = np.max(simulated_lengths)
@@ -210,7 +210,7 @@ def plot_wt_trajectories(
     '''
 
     # initialize figure and axis objects for the plot 
-    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
 
     # plot the wt trajectories over time, using maximum time for x-axis
     max_time = np.max(simulated_lengths)
@@ -255,7 +255,8 @@ def plot_wt_trajectories(
 def plot_interaction_matrix_CLI(
         interaction_matrix: np.array, 
         plot_name: str,
-        cmap = "bwr"
+        cmap = "bwr", 
+        no_plot = False
     ): 
     '''
     Plot the interaction matrix for all species and the mutant
@@ -270,6 +271,7 @@ def plot_interaction_matrix_CLI(
     str cmap - matplotlib cmap to be used for plotting; default is
     bwr
     str plot_name - filename for saving plot 
+    bool no_plot - if True, then no plots are shown
 
     Returns: 
     --------
@@ -277,7 +279,7 @@ def plot_interaction_matrix_CLI(
     '''
 
     # initialize figure and axis objects for the plot 
-    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
 
     # plot the interaction matrix 
     mat = ax.matshow(
@@ -301,7 +303,7 @@ def plot_interaction_matrix_CLI(
     ax.set_ylabel("Species", fontsize=20)
     ax.set_xticks(np.arange(interaction_matrix.shape[0]))
     ax.set_yticks(np.arange(interaction_matrix.shape[0]))
-    ax.set_xticklabels(tick_labels, fontsize=20)
+    ax.set_xticklabels(tick_labels, fontsize=20, rotation="vertical")
     ax.set_yticklabels(tick_labels, fontsize=20)
     ax.xaxis.set_ticks_position('bottom')
 
@@ -313,12 +315,17 @@ def plot_interaction_matrix_CLI(
 
     # show the figure
     fig.savefig(plot_name, dpi = 200)
-    fig.show()
+
+    if not no_plot: 
+        plt.show()
+
+    return 
 
 def plot_birth_death_rates_CLI(
         birth_rates: np.array, 
         death_rates: np.array, 
-        plot_name: str
+        plot_name: str, 
+        no_plot = False
     ): 
     '''
     Plot the birth and death rates for all species and mutant 
@@ -329,6 +336,7 @@ def plot_birth_death_rates_CLI(
     np.array birth_rates - birth rates of each of the species
     np.array death_rates - death rates of each of the species 
     string plot_name - filename for saving plot 
+    bool no_plot - if True, then no plots are shown
 
     Returns: 
     --------
@@ -336,7 +344,7 @@ def plot_birth_death_rates_CLI(
     '''
 
     # initialize figure and axis objects for the plot 
-    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
 
     # plot the birth and death rates 
     ax.plot(np.arange(birth_rates.shape[0]), birth_rates, '^-', label = "birth rates")
@@ -357,7 +365,7 @@ def plot_birth_death_rates_CLI(
     ax.set_xticks(np.arange(birth_rates.shape[0]))
     rate_max = np.max(np.hstack([birth_rates, death_rates]))
     ax.set_yticks(np.arange(0, (rate_max // 0.2 + 1) * 0.2 + 0.1, 0.2))
-    ax.set_xticklabels(tick_labels, fontsize=20)
+    ax.set_xticklabels(tick_labels, fontsize=20, rotation="vertical")
     ax.set_yticklabels(np.round(ax.get_yticks(), 2), fontsize=20)
 
     # make a legend
@@ -365,12 +373,17 @@ def plot_birth_death_rates_CLI(
 
     # show the figure
     fig.savefig(plot_name, dpi = 200)
-    fig.show()
+
+    if not no_plot: 
+        plt.show()
+
+    return 
 
 def plot_mutant_trajectories_CLI(
         mutant_states: np.array, 
         simulated_lengths: np.array, 
-        plot_name: str
+        plot_name: str, 
+        no_plot = False
     ): 
     '''
     Plot the mutant population over time for all simulations 
@@ -381,6 +394,7 @@ def plot_mutant_trajectories_CLI(
     population sizes of the mutant species of interest over time 
     np.array simulated_lengths - array of lengths for each simulation 
     str plot_name - filename for saving plot 
+    bool no_plot - if True, then no plots are shown
 
     Returns: 
     --------
@@ -388,7 +402,7 @@ def plot_mutant_trajectories_CLI(
     '''
 
     # initialize figure and axis objects for the plot 
-    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
 
     # plot the mutant trajectories over time, using maximum time for x-axis
     max_time = np.max(simulated_lengths)
@@ -425,12 +439,17 @@ def plot_mutant_trajectories_CLI(
 
     # show the figure
     fig.savefig(plot_name, dpi = 200)
-    fig.show()
+
+    if not no_plot:
+        plt.show()
+
+    return 
 
 def plot_wt_trajectories_CLI(
         wt_states: np.array, 
         simulated_lengths: np.array, 
-        plot_name: str
+        plot_name: str, 
+        no_plot = False
     ): 
     '''
     Plot the wt population over time for all simulations 
@@ -448,7 +467,7 @@ def plot_wt_trajectories_CLI(
     '''
 
     # initialize figure and axis objects for the plot 
-    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(7,7))
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
 
     # plot the wt trajectories over time, using maximum time for x-axis
     max_time = np.max(simulated_lengths)
@@ -485,4 +504,8 @@ def plot_wt_trajectories_CLI(
 
     # show the figure
     fig.savefig(plot_name, dpi = 200)
-    fig.show()
+
+    if not no_plot: 
+        plt.show()
+
+    return 

@@ -61,8 +61,7 @@ def get_args():
         help="The parameter generating method for the\
         interaction matrix of the ecological network")
     parser.add_argument("--no_plot", action="store_true",
-        help="If true, plotting the results and saving the\
-        figures is *skipped!*")
+        help="If true, plotting the result figures is *skipped!*")
     parser.add_argument("--run_name", type=str,
         default="gLV_run", help="A descriptive prefix for\
         output files")
@@ -75,7 +74,9 @@ def get_args():
 def generate_model_parameters(
         S: int, 
         seed: int, 
-        method = "May"
+        method = "May", 
+        plot_prefix = f"{os.getcwd()}run", 
+        no_plot = False
     ): 
     '''
     Generate the model parameters for the simulation process
@@ -88,6 +89,8 @@ def generate_model_parameters(
     int seed - random seed integer
     string method - the method to generate the interaction matrix:
     the two options are either (1) "May" or (2) "Alessina-Tang"
+    string plot_prefix - filename prefix for saving plots
+    bool no_plot - if True, then no plots are generated
 
     Returns:
     --------
@@ -108,6 +111,21 @@ def generate_model_parameters(
         seed = seed
     )
 
+    # make the interaction matrix plot
+    make_interaction_matrix_plot(
+        interaction_matrix = interaction_matrix, 
+        plot_name = f"{plot_prefix}_interaction_matrix.png", 
+        no_plot = no_plot
+    )
+
+    # make birth and death rates plot
+    make_birth_death_rates_plot(
+        birth_rates = birth_death_rates[:, 0], 
+        death_rates = birth_death_rates[:, 1], 
+        plot_name = f"{plot_prefix}_birth_death_rates.png", 
+        no_plot = no_plot
+    )
+
     return(
         birth_death_rates, 
         interaction_matrix
@@ -115,7 +133,8 @@ def generate_model_parameters(
 
 def make_interaction_matrix_plot(
         interaction_matrix: float, 
-        plot_name: str
+        plot_name: str, 
+        no_plot = False
     ): 
     '''
     Creates a plot of the interaction matrix and saves to the desired
@@ -127,6 +146,7 @@ def make_interaction_matrix_plot(
     the relationships between all species and the mutant species of
     interest 
     string plot_name - filename for saving plot
+    bool no_plot - if True, then no plots are generated
 
     Returns: 
     --------
@@ -135,7 +155,8 @@ def make_interaction_matrix_plot(
 
     plot_interaction_matrix_CLI(
         interaction_matrix = interaction_matrix, 
-        plot_name = plot_name
+        plot_name = plot_name, 
+        no_plot = no_plot
     )
 
     return 
@@ -143,7 +164,8 @@ def make_interaction_matrix_plot(
 def make_birth_death_rates_plot(
         birth_rates: np.array, 
         death_rates: np.array, 
-        plot_name: str
+        plot_name: str, 
+        no_plot = False
     ):
     '''
     Creates a plot of the birth and death rates and saves to the 
@@ -154,6 +176,7 @@ def make_birth_death_rates_plot(
     np.array birth_rates - birth rates of each of the species
     np.array death_rates - death rates of each of the species
     string plot_name - filename for saving plot
+    bool no_plot - if True, then no plots are generated
 
     Returns:
     --------
@@ -163,7 +186,8 @@ def make_birth_death_rates_plot(
     plot_birth_death_rates_CLI(
         birth_rates = birth_rates, 
         death_rates = death_rates, 
-        plot_name = plot_name
+        plot_name = plot_name, 
+        no_plot = no_plot
     )
 
     return 
@@ -246,7 +270,11 @@ def report_simulation_statistics(
         success_counter: int, 
         reduction_counter: int, 
         simulated_lengths: list, 
-        exp_wait_times: list
+        exp_wait_times: list, 
+        wt_states: list,
+        mutant_states: list,
+        plot_prefix = f"{os.getcwd()}run", 
+        no_plot = False
     ): 
     '''
     Report quick statistics from the simulation run 
@@ -261,6 +289,12 @@ def report_simulation_statistics(
     list simulated_lengths - array of simulation length to fixation or 
     extinction
     list exp_wait_times - array of waiting times for each transition
+    np.array wt_states - array of mixed length describing the 
+    population sizes of the wt species of interest over time 
+    np.array mutant_states - array of mixed length describing the 
+    population sizes of the mutant species of interest over time 
+    string plot_prefix - filename prefix for saving plots
+    bool no_plot - if True, then no plots are generated
 
     Returns:
     --------
@@ -271,44 +305,32 @@ def report_simulation_statistics(
 The estimated fixation probability under the gLV model is {np.round(success_counter / 10000, 4)}
 The gLV model was randomly reduced to the classical Moran process {reduction_counter} times
 The average number of transitions until absorption for the species of interst is {np.round(np.mean(simulated_lengths), 4)}
-The average total wait time until absorption for the species of interest is {np.round(np.mean(exp_wait_times), 4)}
-"""
+The average total wait time until absorption for the species of interest is {np.round(np.mean(exp_wait_times), 4)}"""
 
     print(summary_lines)
 
-    return summary_lines 
-
-def make_mutant_population_trajectories(
-        mutant_states: np.array, 
-        simulated_lengths: np.array, 
-        plot_name: str
-    ): 
-    '''
-    Creates a plot of the mutant population over time for all simulations
-    and saves to the desired directory 
-
-    Parameters:
-    -----------
-    np.array mutant_states - array of mixed length describing the 
-    population sizes of the mutant species of interest over time 
-    np.array simulated_lengths - array of lengths for each simulation 
-    str plot_name - filename for saving plot 
-
-    Returns: 
-    --------
-    None
-    '''
-
-    plot_mutant_trajectories_CLI(
+    # make trajectory plots for wt and mutant of species of interest
+    make_wt_population_trajectories(
+        wt_states = wt_states, 
+        simulated_lengths = simulated_lengths, 
+        plot_name = f"{plot_prefix}_wt_trajectories.png", 
+        no_plot = no_plot
+    )
+    make_mutant_population_trajectories(
         mutant_states = mutant_states, 
         simulated_lengths = simulated_lengths, 
-        plot_name = plot_name
+        plot_name = f"{plot_prefix}_mutant_trajectories.png", 
+        no_plot = no_plot
     )
+
+    return summary_lines 
+
 
 def make_wt_population_trajectories(
         wt_states: np.array, 
         simulated_lengths: np.array, 
-        plot_name: str
+        plot_name: str, 
+        no_plot = False
     ): 
     '''
     Creates a plot of the wild-type populations over time for all 
@@ -320,6 +342,7 @@ def make_wt_population_trajectories(
     population sizes of the wt species of interest over time 
     np.array simulated_lengths - array of lengths for each simulation 
     str plot_name - filename for saving plot 
+    bool no_plot - if True, then no plots are generated
 
     Returns: 
     --------
@@ -329,7 +352,40 @@ def make_wt_population_trajectories(
     plot_wt_trajectories_CLI(
         wt_states = wt_states, 
         simulated_lengths = simulated_lengths, 
-        plot_name = plot_name
+        plot_name = plot_name, 
+        no_plot = no_plot
+    )
+
+    return 
+
+def make_mutant_population_trajectories(
+        mutant_states: np.array, 
+        simulated_lengths: np.array, 
+        plot_name: str, 
+        no_plot = False
+    ): 
+    '''
+    Creates a plot of the mutant population over time for all simulations
+    and saves to the desired directory 
+
+    Parameters:
+    -----------
+    np.array mutant_states - array of mixed length describing the 
+    population sizes of the mutant species of interest over time 
+    np.array simulated_lengths - array of lengths for each simulation 
+    str plot_name - filename for saving plot 
+    bool no_plot - if True, then no plots are generated
+
+    Returns: 
+    --------
+    None
+    '''
+
+    plot_mutant_trajectories_CLI(
+        mutant_states = mutant_states, 
+        simulated_lengths = simulated_lengths, 
+        plot_name = plot_name, 
+        no_plot = no_plot
     )
 
     return 
@@ -342,40 +398,33 @@ if __name__ == "__main__":
     # parse the arguments 
     args = get_args()
 
+    # make our_dir if it does not exist 
+    if not os.path.isdir(args.out_dir): 
+        os.mkdir(args.out_dir)
+
     # generate the model parameters 
     birth_death_rates, interaction_matrix = generate_model_parameters(
         S = args.species, 
         seed = args.seed, 
-        method = args.method
-    )
-
-    # make the interaction matrix plot
-    make_interaction_matrix_plot(
-        interaction_matrix = interaction_matrix, 
-        plot_name = f"{args.out_dir}/{args.run_name}_interaction_matrix.png"
-    )
-
-    # make birth and death rates plot
-    make_birth_death_rates_plot(
-        birth_rates = birth_death_rates[:, 0], 
-        death_rates = birth_death_rates[:, 1], 
-        plot_name = f"{args.out_dir}/{args.run_name}_birth_death_rates.png"
+        method = args.method, 
+        plot_prefix = f"{args.out_dir}/{args.run_name}",
+        no_plot = args.no_plot
     )
 
     # open a file to store a summary of the simulation results
-    f = open(f"{args.out_dir}/{args.run_name}_summary.txt")
+    f = open(f"{args.out_dir}/{args.run_name}_summary.txt", "w")
 
     # calculate and report the fixation probability for a simple Moran process
     fixation_probability = calculate_moran_fixation_probability(
         S = args.species, 
-        pop_size = args.pop_size, 
+        pop_size = args.population_size, 
         birth_rates = birth_death_rates[:, 0], 
         death_rates = birth_death_rates[:, 1]
     )
     fixation_line = f"The fixation probability of the standard Moran process is \
         {np.round(fixation_probability, 4)}"
     f.write(fixation_line+"\n\n")
-    print(fixation_line, end="\n\n")
+    print(fixation_line, end="\n")
 
     # run the gLV model simulation 
     success_counter, \
@@ -386,7 +435,7 @@ if __name__ == "__main__":
     mutant_states = simulate_gLV_model(
         nsims = args.nsims, 
         S = args.species, 
-        pop_size = args.pop_size, 
+        pop_size = args.population_size, 
         birth_rates = birth_death_rates[:, 0], 
         death_rates = birth_death_rates[:, 1], 
         interaction_matrix = interaction_matrix
@@ -397,19 +446,13 @@ if __name__ == "__main__":
         success_counter = success_counter, 
         reduction_counter = reduction_counter, 
         simulated_lengths = simulated_lengths, 
-        exp_wait_times = exp_wait_times
+        exp_wait_times = exp_wait_times, 
+        wt_states = wt_states, 
+        mutant_states = mutant_states, 
+        plot_prefix = f"{args.out_dir}/{args.run_name}", 
+        no_plot = args.no_plot
     )
     f.write(summary_lines)
     f.close()
 
-    # make trajectory plots for wt and mutant of species of interest
-    make_wt_population_trajectories(
-        wt_states = wt_states, 
-        simulated_lengths = simulated_lengths, 
-        plot_name = f"{args.out_dir}/{args.run_name}_wt_trajectories.png"
-    )
-    make_mutant_population_trajectories(
-        mutant_states = mutant_states, 
-        simulated_lengths = simulated_lengths, 
-        plot_name = f"{args.out_dir}/{args.run_name}_mutant_trajectories.png"
-    )
+
