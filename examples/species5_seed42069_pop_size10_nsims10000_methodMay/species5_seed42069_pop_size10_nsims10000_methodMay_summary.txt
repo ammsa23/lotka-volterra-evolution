@@ -1,0 +1,7 @@
+The fixation probability of the standard Moran process is         0.0
+
+
+The estimated fixation probability under the gLV model is 0.1124
+The gLV model was randomly reduced to the classical Moran process 356 times
+The average number of transitions until absorption for the species of interst is 55.7583
+The average total wait time until absorption for the species of interest is 27418.4366
