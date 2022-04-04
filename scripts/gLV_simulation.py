@@ -255,7 +255,7 @@ def simulate_gLV_model(
             # store the results 
             success_counter += simulation_results[0]
             reduction_counter += np.any(simulation_results[1][:,0] == 0)
-            simulated_lengths.append(simulation_results[1].shape[0])
+            simulated_lengths.append(simulation_results[1].shape[0] - 1)
             exp_wait_times.append(simulation_results[2].sum())
             wt_states.append(list(simulation_results[1][:,-2]))
             mutant_states.append(list(simulation_results[1][:,-1]))
@@ -332,11 +332,10 @@ The average total wait time until absorption for the species of interest is {np.
 
     return summary_lines 
 
-
 def make_wt_population_trajectories(
         wt_states: np.array, 
         simulated_lengths: np.array, 
-        plot_name: str, 
+        plot_prefix: str, 
         no_plot = False
     ): 
     '''
@@ -348,7 +347,7 @@ def make_wt_population_trajectories(
     np.array wt_states - array of mixed length describing the 
     population sizes of the wt species of interest over time 
     np.array simulated_lengths - array of lengths for each simulation 
-    str plot_name - filename for saving plot 
+    str plot_prefix - filename for saving plot 
     bool no_plot - if True, then no plots are generated
 
     Returns: 
@@ -359,7 +358,7 @@ def make_wt_population_trajectories(
     plot_wt_trajectories_CLI(
         wt_states = wt_states, 
         simulated_lengths = simulated_lengths, 
-        plot_name = plot_name, 
+        plot_name = plot_prefix, 
         no_plot = no_plot
     )
 
@@ -368,7 +367,7 @@ def make_wt_population_trajectories(
 def make_mutant_population_trajectories(
         mutant_states: np.array, 
         simulated_lengths: np.array, 
-        plot_name: str, 
+        plot_prefix: str, 
         no_plot = False
     ): 
     '''
@@ -380,7 +379,7 @@ def make_mutant_population_trajectories(
     np.array mutant_states - array of mixed length describing the 
     population sizes of the mutant species of interest over time 
     np.array simulated_lengths - array of lengths for each simulation 
-    str plot_name - filename for saving plot 
+    str plot_prefix - filename for saving plot 
     bool no_plot - if True, then no plots are generated
 
     Returns: 
@@ -391,7 +390,7 @@ def make_mutant_population_trajectories(
     plot_mutant_trajectories_CLI(
         mutant_states = mutant_states, 
         simulated_lengths = simulated_lengths, 
-        plot_name = plot_name, 
+        plot_name = plot_prefix, 
         no_plot = no_plot
     )
 
@@ -471,4 +470,16 @@ if __name__ == "__main__":
     f.write(summary_lines)
     f.close()
 
-
+    # make population trajectory plots for wild-type and mutant species
+    make_wt_population_trajectories(
+        wt_states = wt_states, 
+        simulated_lengths = simulated_lengths, 
+        plot_prefix = f"{args.out_dir}/{args.run_name}", 
+        no_plot = args.no_plot
+    )
+    make_mutant_population_trajectories(
+        mutant_states = mutant_states, 
+        simulated_lengths = simulated_lengths, 
+        plot_prefix = f"{args.out_dir}/{args.run_name}", 
+        no_plot = args.no_plot
+    )

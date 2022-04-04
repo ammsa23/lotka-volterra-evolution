@@ -134,6 +134,9 @@ def plot_birth_death_rates(
     # show the figure
     plt.show()
 
+def plot_(): 
+    pass
+
 def plot_mutant_trajectories(
         mutant_states: np.array, 
         simulated_lengths: np.array

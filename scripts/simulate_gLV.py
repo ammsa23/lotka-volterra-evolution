@@ -281,10 +281,10 @@ def run_simulation(
     bool - boolean data type that returns whether or not the mutant 
     species of interest fixes (1 if the mutant fixes; 0 if the mutant
     goes extinct)
-    np.array (1) - array of exponential wait times between transitions
-    (shape: (steps,))
-    np.array (2) - array of states describing the population sizes of 
+    np.array (1) - array of states describing the population sizes of 
     each species at each step (shape: (steps, 3))
+    np.array (2) - array of exponential wait times between transitions
+    (shape: (steps,))
     '''
 
     # initialize the populations of each of the species 
@@ -318,10 +318,12 @@ def run_simulation(
 
 
     # determine the result of the simulation
-    if (system_state[-1] > 0): 
+    if (system_state[-1] > 0 and system_state[-2] == 0): 
         result = 1
-    else: 
+    elif (system_state[-1] == 0 and system_state[-2] > 0): 
         result = 0 
+    else: 
+        result = np.nan # the simulation did not converge 
 
     # return the result of the simulation and the collected data
     # for the entire simulation 
