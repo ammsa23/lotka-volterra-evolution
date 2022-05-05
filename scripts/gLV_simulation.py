@@ -235,7 +235,7 @@ def simulate_gLV_model(
     # initialize storage for simulation results 
     success_counter = 0 # counts of mutant fixation 
     reduction_counter = 0 # counts of reduction into classical Moran process
-    simulated_lengths = list() # number of transitions to absorption 
+    simulated_lengths = list() # number of states to absorption 
     exp_wait_times = list() # length of time to absorption 
     wt_states = list() # states of the wt until absorption 
     mutant_states = list() # states of the mutant until absorption 
@@ -255,7 +255,7 @@ def simulate_gLV_model(
             # store the results 
             success_counter += simulation_results[0]
             reduction_counter += np.any(simulation_results[1][:,0] == 0)
-            simulated_lengths.append(simulation_results[1].shape[0] - 1)
+            simulated_lengths.append(simulation_results[1].shape[0])
             exp_wait_times.append(simulation_results[2].sum())
             wt_states.append(list(simulation_results[1][:,-2]))
             mutant_states.append(list(simulation_results[1][:,-1]))
@@ -311,10 +311,23 @@ def report_simulation_statistics(
     summary_lines = f"""
 The estimated fixation probability under the gLV model is {np.round(success_counter / 10000, 4)}
 The gLV model was randomly reduced to the classical Moran process {reduction_counter} times
-The average number of transitions until absorption for the species of interest is {np.round(np.mean(simulated_lengths), 4)}
+The average number of states until absorption for the species of interest is {np.round(np.mean(simulated_lengths), 4)}
 The average total wait time until absorption for the species of interest is {np.round(np.mean(exp_wait_times), 4)}"""
 
     print(summary_lines)
+
+    # plot distributions of simulation lengths and wait times
+    make_length_histogram(
+        simulated_lengths = simulated_lengths, 
+        plot_name = f"{plot_prefix}_simulated_lengths.png", 
+        no_plot = no_plot
+    )
+
+    make_wait_time_histogram(
+        exp_wait_times = exp_wait_times, 
+        plot_name = f"{plot_prefix}_wait_times.png", 
+        no_plot = no_plot
+    )
 
     # make trajectory plots for wt and mutant of species of interest
     make_wt_population_trajectories(
@@ -332,6 +345,63 @@ The average total wait time until absorption for the species of interest is {np.
 
     return summary_lines 
 
+def make_length_histogram(
+        simulated_lengths: np.array, 
+        plot_name: str, 
+        no_plot = False
+    ):
+    '''
+    Plot a histogram of the simulated lengths and saves to the desired 
+    directory
+
+    Parameters: 
+    -----------
+    np.array simulated_lengths - array of simulation length to fixation or 
+    extinction
+    string plot_name - filename for saving plot 
+    bool no_plot - if True, then no plots are shown
+
+    Returns: 
+    --------
+    None
+    '''
+
+    plot_length_distribution_CLI(
+        simulated_lengths = simulated_lengths, 
+        plot_name = plot_name, 
+        no_plot = no_plot
+    )
+
+    return 
+
+def make_wait_time_histogram(
+        exp_wait_times: np.array,
+        plot_name: str, 
+        no_plot = False
+    ):
+    '''
+    Plot a histogram of the exponential waiting times and saves to the 
+    desired directory
+
+    Parameters: 
+    -----------
+    np.array exp_wait_times - array of waiting times for each transition
+    string plot_name - filename for saving plot 
+    bool no_plot - if True, then no plots are shown
+
+    Returns: 
+    --------
+    None
+    '''
+
+    plot_wait_time_distribution_CLI(
+        exp_wait_times = exp_wait_times, 
+        plot_name = plot_name, 
+        no_plot = no_plot
+    )
+
+    return 
+
 def make_wt_population_trajectories(
         wt_states: np.array, 
         simulated_lengths: np.array, 
@@ -340,7 +410,7 @@ def make_wt_population_trajectories(
     ): 
     '''
     Creates a plot of the wild-type populations over time for all 
-    simulations and saves to the desired trajectory
+    simulations and saves to the desired directory
 
     Parameters: 
     -----------

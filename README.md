@@ -20,8 +20,24 @@ To simulate the gLV model using a stochastic framework as a continuous-time Mark
 We then allow this process to run until a fixation or extinction event occurs in the mutant. The mutant fixes in the population if the wild-type goes extinct. As such, we do not interpret fixation in the context of this stochastic process to mean that the mutant takes over the entire population but rather takes over the entire species sub-population within the ecological locale. From each complete simulation, we determine and store whether or not the mutant fixes or goes extinct, the set of states that the Markov chain occupied through the simulation, and the exponential waiting times for each of the transitions. From this saved information alone, we are able to capture a number of statistics from the simulations, such as the estimated fixation probability (according to the definition given above), the number of times the stochastic model reverts to the classical Moran process (all the other species go extinct so only the wild-type and mutant species of interest), the average number of states occupied until absorption, and the average wait time associated with absorption.  
 
 # Plotting Key Figures
-There are two types of figures for this model. There are figures that explain the setup of the model, such as plots of the birth and death rates of all the species and the interaction matrix, both including the mutant. 
+There are two types of figures for this model. There are figures that explain the setup of the model, such as plots of the birth and death rates of all the species and the interaction matrix, both including the mutant. The birth and death rate plots simply show the species-specific birth and death rates for each of the species. The birth and death rates can be easily compared for a single species to ascertain its general fitness (if the birth rate > death rate, then the species is relatively fit; if the birth rate < death rate, then the species is relatively unfit). The species interaction matrix depicts the pairwise interactions between species using a blue-white-red diverging colormap. Thus, positive interactions (which increase fitness of the column species) are shown in red, while negative interactions (which decrease fitness of the column species) are shown in blue. Neutral interactions are shown in white. 
 
-There are also plots that explain the results of the simulations. Currently, these plots show the trajectories of either wild-type or mutant populations by transition, highlighting cases of fixation or extinction for the desired population.  
+We also plot histograms that capture the distributions for simulation length and exponential wait times for a more accurate portrayal of those distributions as opposed to just a measure of central tendency. There are also plots that explain the results of the simulations. Currently, these plots show the trajectories of either wild-type or mutant populations by transition, highlighting cases of fixation or extinction for the desired population. Trajectories that result in eventual extinction of the desired population are colored in red, while those trajectories that result in eventual fixation are colored in blue. 
 
-Another plot that we plan on implementing soon is a series of histograms and kernel density estimators that capture the distributions of our estimates for a more accurate portrayal of those distributions as opposed to a measure of central tendency. 
+# Results 
+
+Things to test: 
+1. General trends in fixation probability (for N = 2 species)
+2. Number of species 
+3. Number of individuals (size of finite population)
+4. Perturbation size? (only if time) 
+
+# Discussion
+
+Appears to be the case that the fixation probability in this environment typically increases and that there are certain cases in which the fixation probability for the mutant species alone is 0 but the addition of other species allows fixation of that event
+
+Note that finite population model with direct birth-death based on fitness --> maybe reflects bacteria well? 
+
+Difficult to tell if we've adequately explored all of parameter space having done 10-100 simulations even for N = 2 species. Are the general trends really general? 
+
+It is possible for more interesting dynamics, such as an equilibrium and "speciation" event for the new species. These possibilities are limited by the set up of the model. Thus, this model cannot capture speciation events or even latent genetic variation. 

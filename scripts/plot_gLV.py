@@ -134,8 +134,72 @@ def plot_birth_death_rates(
     # show the figure
     plt.show()
 
-def plot_(): 
-    pass
+def plot_length_distribution(
+        simulated_lengths: np.array
+    ): 
+    '''
+    Plot a histogram of the simulated lengths 
+
+    Parameters: 
+    -----------
+    np.array simulated_lengths - array of simulation length to fixation or 
+    extinction
+
+    Returns: 
+    --------
+    None
+    '''
+
+    # initialize figure and axis objects for the plot 
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
+
+    # plot the histogram
+    ax.hist(simulated_lengths)
+
+    # labeling the plot 
+    ax.set_title("Histogram of Simulated Lengths", fontsize=20)
+    ax.set_xlabel("Simulated Lengths", fontsize=20)
+    ax.set_ylabel("Frequency", fontsize=20)
+    ax.set_xticks(ax.get_xticks())
+    ax.set_yticks(ax.get_yticks())
+    ax.set_xticklabels(ax.get_xticks().astype("int32"), fontsize=20)
+    ax.set_yticklabels(ax.get_yticks().astype("int32"), fontsize=20)
+
+    # show the figure 
+    plt.show()
+
+def plot_wait_time_distribution(
+        exp_wait_times: np.array
+    ): 
+    '''
+    Plot a histogram of the exponential waiting times 
+
+    Parameters: 
+    -----------
+    np.array exp_wait_times - array of waiting times for each transition
+
+    Returns: 
+    --------
+    None
+    '''
+
+    # initialize figure and axis objects for the plot 
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
+
+    # plot the histogram
+    ax.hist(exp_wait_times)
+
+    # labeling the plot 
+    ax.set_title("Histogram of Waiting Times", fontsize=20)
+    ax.set_xlabel("Waiting Times", fontsize=20)
+    ax.set_ylabel("Frequency", fontsize=20)
+    ax.set_xticks(ax.get_xticks())
+    ax.set_yticks(ax.get_yticks())
+    ax.set_xticklabels(ax.get_xticks().astype("int32"), fontsize=20)
+    ax.set_yticklabels(ax.get_yticks().astype("int32"), fontsize=20)
+
+    # show the figure 
+    plt.show()
 
 def plot_mutant_trajectories(
         mutant_states: np.array, 
@@ -375,6 +439,93 @@ def plot_birth_death_rates_CLI(
     ax.legend(fontsize=16)
 
     # show the figure
+    fig.savefig(plot_name, dpi = 200)
+
+    if not no_plot: 
+        plt.show()
+
+    return 
+
+def plot_length_distribution_CLI(
+        simulated_lengths: np.array,
+        plot_name: str, 
+        no_plot = False
+    ): 
+    '''
+    Plot a histogram of the simulated lengths and saves to the desired 
+    directory
+
+    Parameters: 
+    -----------
+    np.array simulated_lengths - array of simulation length to fixation or 
+    extinction
+    string plot_name - filename for saving plot 
+    bool no_plot - if True, then no plots are shown
+
+    Returns: 
+    --------
+    None
+    '''
+
+    # initialize figure and axis objects for the plot 
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
+
+    # plot the histogram
+    ax.hist(simulated_lengths)
+
+    # labeling the plot 
+    ax.set_title("Histogram of Simulated Lengths", fontsize=20)
+    ax.set_xlabel("Simulated Lengths", fontsize=20)
+    ax.set_ylabel("Frequency", fontsize=20)
+    ax.set_xticks(ax.get_xticks())
+    ax.set_yticks(ax.get_yticks())
+    ax.set_xticklabels(ax.get_xticks().astype("int32"), fontsize=20)
+    ax.set_yticklabels(ax.get_yticks().astype("int32"), fontsize=20)
+
+    # show the figure 
+    fig.savefig(plot_name, dpi = 200)
+
+    if not no_plot: 
+        plt.show()
+
+    return 
+
+def plot_wait_time_distribution_CLI(
+        exp_wait_times: np.array,
+        plot_name: str, 
+        no_plot = False
+    ): 
+    '''
+    Plot a histogram of the exponential waiting times and saves to the 
+    desired directory
+
+    Parameters: 
+    -----------
+    np.array exp_wait_times - array of waiting times for each transition
+    string plot_name - filename for saving plot 
+    bool no_plot - if True, then no plots are shown
+
+    Returns: 
+    --------
+    None
+    '''
+
+    # initialize figure and axis objects for the plot 
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize=(10,10))
+
+    # plot the histogram
+    ax.hist(exp_wait_times)
+
+    # labeling the plot 
+    ax.set_title("Histogram of Waiting Times", fontsize=20)
+    ax.set_xlabel("Waiting Times", fontsize=20)
+    ax.set_ylabel("Frequency", fontsize=20)
+    ax.set_xticks(ax.get_xticks())
+    ax.set_yticks(ax.get_yticks())
+    ax.set_xticklabels(ax.get_xticks().astype("int32"), fontsize=20)
+    ax.set_yticklabels(ax.get_yticks().astype("int32"), fontsize=20)
+
+    # show the figure 
     fig.savefig(plot_name, dpi = 200)
 
     if not no_plot: 
