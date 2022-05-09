@@ -90,8 +90,6 @@ def pre_interaction_matrix(
     options are either (1) "May" or (2) "Alessina-Tang"
     float rho - correlation coefficient between bivariate Normal random 
     variables 
-    float tol - tolerance level for maintaining connections in the interaction
-    matrix
 
     Returns: 
     --------
@@ -112,30 +110,18 @@ def pre_interaction_matrix(
 
     elif (method == "Alessina-Tang"): 
 
-        if (rho == None or tol == None): 
+        if (rho == None): 
             raise ValueError
 
         # generate paired data from a bivariate normal distribution 
-        pairs = rng.multivariate_normal(np.array([0, 0]), 
-                                           np.array([1, rho, rho, 1]).reshape(2, 2))
+        pairs = rng.multivariate_normal(mean = np.array([0, 0]), 
+                                        cov = np.array([1, rho, rho, 1]).reshape(2, 2),
+                                        size = S * (S - 1) // 2)
 
         # place the paired data into the matrix 
         interaction_matrix = np.zeros((S, S))
-        interaction_matrix[np.triu_indices(S)] = pairs[:,0]
-        interaction_matrix[np.tril_indices(S)] = pairs[:,1]
-
-        # use the provided tolerance value to determine which relationships
-        # to maintain
-        paired = rng.uniform(S ** 2, size = (S, S)) <= tol 
-        paired[np.tril_indices(S)] = 0
-        np.fill_diagonal(paired, 0)
-
-        # set the interaction matrix according to the rngly 
-        # generated pairs 
-        interaction_matrix = interaction_matrix * paired
-
-    # set the diagonal elements to 0
-    np.fill_diagonal(interaction_matrix, 0)
+        interaction_matrix[np.triu_indices(S, 1)] = pairs[:,0]
+        interaction_matrix[np.tril_indices(S, -1)] = pairs[:,1]
 
     return interaction_matrix
 
@@ -184,7 +170,8 @@ def mutant_interaction_matrix(
 def generate_interaction_matrix(
         S: int, 
         seed: int, 
-        method = "May"
+        method = "May", 
+        rho = None
     ): 
     '''
     Generate an interaction matrix for the relationships between all
@@ -198,6 +185,8 @@ def generate_interaction_matrix(
     int seed - random seed integer
     string method - the method to generate the interaction matrix: the two
     options are either (1) "May" or (2) "Alessina-Tang"
+    float rho - correlation coefficient between bivariate Normal random 
+    variables 
 
     Returns: 
     --------
@@ -211,7 +200,8 @@ def generate_interaction_matrix(
     interaction_matrix = pre_interaction_matrix(
                             S, 
                             method = method, 
-                            seed = seed
+                            seed = seed, 
+                            rho = rho
                             )
 
     # perturb the species of interest (the last species)

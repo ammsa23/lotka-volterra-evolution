@@ -61,8 +61,11 @@ def get_args():
     parser.add_argument("--method", type=str, default="May", 
         help="The parameter generating method for the\
         interaction matrix of the ecological network")
+    parser.add_argument("--rho", type=float, default=None,
+        help="The correlation coefficient for the generation of\
+        the interaction matrix by the Alessina-Tang method")
     parser.add_argument("--no_plot", action="store_true",
-        help="If true, plotting the result figures is *skipped!*")
+        help="If true, only plotting the result figures is **skipped!**")
     parser.add_argument("--run_name", type=str,
         default="none", help="A descriptive prefix for\
         output files")
@@ -76,6 +79,7 @@ def generate_model_parameters(
         S: int, 
         seed: int, 
         method = "May", 
+        rho = None, 
         plot_prefix = f"{os.getcwd()}run", 
         no_plot = False
     ): 
@@ -90,6 +94,8 @@ def generate_model_parameters(
     int seed - random seed integer
     string method - the method to generate the interaction matrix:
     the two options are either (1) "May" or (2) "Alessina-Tang"
+    float rho - correlation coefficient between bivariate Normal random 
+    variables for the Alessina-Tang method
     string plot_prefix - filename prefix for saving plots
     bool no_plot - if True, then no plots are generated
 
@@ -105,12 +111,21 @@ def generate_model_parameters(
     mutant_birth_death = mutant_birth_death_rate(birth_death = birth_death_rates[-1, :], seed = seed)
     birth_death_rates = np.vstack([birth_death_rates, mutant_birth_death])
 
-    # generate the interaction matrix for each species
-    interaction_matrix = generate_interaction_matrix(
-        S = S, 
-        method = method, 
-        seed = seed
-    )
+    if (method == "May"): 
+        # generate the interaction matrix for each species by May method
+        interaction_matrix = generate_interaction_matrix(
+            S = S, 
+            method = method, 
+            seed = seed
+        )
+    elif (method == "Alessina-Tang"): 
+        # generate the interaction matrix for each species by Alessina-Tang method
+        interaction_matrix = generate_interaction_matrix(
+            S = S, 
+            method = method, 
+            rho = rho,
+            seed = seed
+        )
 
     # make the interaction matrix plot
     make_interaction_matrix_plot(
@@ -482,7 +497,12 @@ if __name__ == "__main__":
     if args.out_dir.lower() == "none": 
         args.out_dir = f"species{args.species}_seed{args.seed}_pop_size{args.population_size}_nsims{args.nsims}_method{args.method}"
 
-    # make our_dir directory if it does not exist 
+    # update names to include rho for Alessina-Tang
+    if args.rho != None and args.method == "Alessina-Tang": 
+        args.run_name += f"_rho{args.rho}"
+        args.out_dir += f"_rho{args.rho}"
+
+    # make out_dir directory if it does not exist 
     if not os.path.isdir(args.out_dir): 
         os.mkdir(args.out_dir)
 
@@ -491,6 +511,7 @@ if __name__ == "__main__":
         S = args.species, 
         seed = args.seed, 
         method = args.method, 
+        rho = args.rho,
         plot_prefix = f"{args.out_dir}/{args.run_name}",
         no_plot = args.no_plot
     )

@@ -98,7 +98,7 @@ def calculate_adjusted_birth_rates(
     adding only the positive interactions 
     '''
 
-    return system_state * birth_rates + system_state @ \
+    return birth_rates + system_state @ \
         ((interaction_matrix > 0) * interaction_matrix)
 
 
@@ -126,7 +126,7 @@ def calculate_adjusted_death_rates(
     adding only the negative interactions 
     '''
 
-    return system_state * death_rates + system_state @ \
+    return death_rates + system_state @ \
         ((interaction_matrix > 0) * interaction_matrix)
 
 def calculate_step_probability(
@@ -180,7 +180,7 @@ def run_step(
     '''
     Run a single simulation step by taking in the current population 
     of the system, calculating the transition probabilities, 
-    rngly determining the next transition, and drawing an 
+    randomly determining the next transition, and drawing an 
     exponential waiting time
 
     Parameters: 
