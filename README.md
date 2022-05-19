@@ -1,4 +1,7 @@
 # Generalized Lotka-Volterra Model with Evolution
+
+We recently put together a brief paper describing the work presented [here](Math_243_Final_Project.pdf) that contains a general overview of the project and some preliminary results and discussion. Below is a summary of the Methods section. 
+
 This repository simulates the ecological interactions between species under a stochastic framework of the generalized Lotka-Volterra model undergoing evolution subject to a multi-species Moran process. The generalized Lotka-Volterra (gLV) model is a set of differential equations that is used to express the ecological relationships between a set of S species in an ecological locale. The flexible parameterization of the gLV model allows for it to capture a wide variety of dynamic behaviors important to ecological stability and fluctuations amongst interacting species. 
 
 Here, we approach the gLV model under a stochastic framework, modeling entire ecological locale as a multi-species fixed population, Moran process. The stochastic process we consider here is a birth-death process for each individual species, wherein an individual from a single species is chosen to replicate proportional to birth rate and another individual from a different species (in order to treat this system as a continuous-time Markov chain) is chosen to perish proportional to death rate. To incorporate information about inter-species interactions, we introduce the interaction (alternatively called ecological community) matrix from the gLV model and use it to modulate the intrinsic birth and death rates of each of the species. In particular, positive contributions from one species increase a species' birth rate, while negative contributions from one species increase a species' death rate. 
@@ -24,20 +27,3 @@ There are two types of figures for this model. There are figures that explain th
 
 We also plot histograms that capture the distributions for simulation length and exponential wait times for a more accurate portrayal of those distributions as opposed to just a measure of central tendency. There are also plots that explain the results of the simulations. Currently, these plots show the trajectories of either wild-type or mutant populations by transition, highlighting cases of fixation or extinction for the desired population. Trajectories that result in eventual extinction of the desired population are colored in red, while those trajectories that result in eventual fixation are colored in blue. 
 
-# Results 
-
-Things to test: 
-1. General trends in fixation probability (for N = 2 species)
-2. Number of species 
-3. Number of individuals (size of finite population)
-4. Perturbation size? (only if time) 
-
-# Discussion
-
-Appears to be the case that the fixation probability in this environment typically increases and that there are certain cases in which the fixation probability for the mutant species alone is 0 but the addition of other species allows fixation of that event
-
-Note that finite population model with direct birth-death based on fitness --> maybe reflects bacteria well? 
-
-Difficult to tell if we've adequately explored all of parameter space having done 10-100 simulations even for N = 2 species. Are the general trends really general? 
-
-It is possible for more interesting dynamics, such as an equilibrium and "speciation" event for the new species. These possibilities are limited by the set up of the model. Thus, this model cannot capture speciation events or even latent genetic variation. 
